@@ -1,11 +1,675 @@
 <!DOCTYPE html>
-<html>
- <head>
-  <title>我的名片</title>
-  <meta charset="utf-8">
- </head>
- <bady>
-  <h1>你好，我是小盆友</h1>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>小盆友 · 创意数字名片</title>
+    <!-- 优化字体加载，提升体验 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (免费且丰富图标) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* RESET & 基础变量 — 方便后续主题开发 */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
- </bady>  
+        :root {
+            --primary-gradient-start: #6366f1;
+            --primary-gradient-end: #8b5cf6;
+            --card-bg-blur: rgba(255, 255, 255, 0.25);
+            --inner-bg: rgba(255, 255, 255, 0.85);
+            --text-dark: #1f1b2e;
+            --text-soft: #4a3a6e;
+            --accent-gold: #fbbf24;
+            --accent-rose: #f472b6;
+            --shadow-sm: 0 12px 30px rgba(0, 0, 0, 0.1);
+            --border-light: rgba(255, 255, 255, 0.4);
+            --transition-default: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #1e1a3a 0%, #3b2b5c 45%, #a56cc7 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 抽象动态背景元素，提升设计感 */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 80vw;
+            height: 80vw;
+            max-width: 600px;
+            max-height: 600px;
+            background: radial-gradient(circle, rgba(255,215,150,0.2) 0%, rgba(168,85,247,0) 70%);
+            top: -20%;
+            left: -20%;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(79,70,229,0.15) 0%, rgba(139,92,246,0) 70%);
+            bottom: -15%;
+            right: -15%;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 主卡片 — 毛玻璃 + 细腻边框，提升质感 */
+        .glass-master {
+            position: relative;
+            z-index: 10;
+            max-width: 880px;
+            width: 100%;
+            background: var(--card-bg-blur);
+            backdrop-filter: blur(16px);
+            border-radius: 3.5rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            transition: transform 0.35s ease, box-shadow 0.4s ease;
+        }
+
+        .glass-master:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 40px 60px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 内层卡片容器，干净整洁 */
+        .card-core {
+            background: var(--inner-bg);
+            backdrop-filter: blur(2px);
+            border-radius: 2.8rem;
+            margin: 1.2rem;
+            padding: 2rem 2rem 2rem 2rem;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: background 0.2s;
+        }
+
+        /* 头部区域：灵活布局 */
+        .hero-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1.8rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .identity {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* 头像立体感增强 */
+        .avatar-ring {
+            background: linear-gradient(135deg, #fbbf24, #ec489a);
+            border-radius: 50%;
+            padding: 4px;
+            box-shadow: 0 15px 25px -8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .avatar-ring:hover {
+            transform: scale(1.02);
+        }
+
+        .avatar-icon {
+            width: 96px;
+            height: 96px;
+            background: linear-gradient(145deg, #4f46e5, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .avatar-icon i {
+            font-size: 3.8rem;
+            color: white;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .title-badge h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #2d2a54, #6c47b0, #f59e0b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subhead {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.12);
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #5b3f8a;
+            margin-top: 8px;
+        }
+
+        .subhead i {
+            margin-right: 6px;
+            color: #f59e0b;
+        }
+
+        /* 状态徽章（开发友好标识） */
+        .dev-status {
+            background: #2dd4bf20;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #0f3a38;
+            border: 1px solid #2dd4bf60;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 简介区 — 柔和卡片 */
+        .bio-card {
+            background: rgba(255, 245, 235, 0.6);
+            padding: 1.2rem 1.6rem;
+            border-radius: 1.8rem;
+            margin: 1.5rem 0 2rem 0;
+            border-left: 6px solid #fbbf24;
+            font-weight: 500;
+            color: #2e2a3e;
+            line-height: 1.5;
+            transition: all 0.2s;
+        }
+
+        .bio-card i {
+            color: #f97316;
+            margin-right: 6px;
+        }
+
+        /* 联系方式网格：现代感 */
+        .contact-dock {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 1.8rem 0 2rem;
+        }
+
+        .contact-tile {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: var(--transition-default);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid #ede9fe;
+            cursor: pointer;
+        }
+
+        .contact-tile:hover {
+            transform: translateY(-4px);
+            background: #fffaf2;
+            border-color: #fbbf24;
+            box-shadow: 0 18px 25px -14px rgba(0, 0, 0, 0.15);
+        }
+
+        .tile-icon {
+            width: 46px;
+            height: 46px;
+            background: #f1eefe;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #8b5cf6;
+            transition: 0.2s;
+        }
+
+        .contact-tile:hover .tile-icon {
+            background: linear-gradient(145deg, #8b5cf6, #c084fc);
+            color: white;
+        }
+
+        .tile-detail .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7c669f;
+        }
+
+        .tile-detail .value {
+            font-weight: 700;
+            color: #1e1a2f;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        /* 技能标签 + 兴趣区（易于迭代） */
+        .skill-zone {
+            margin: 1.5rem 0 1rem;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #3b2b5c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.2px;
+        }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-tag {
+            background: white;
+            border-radius: 60px;
+            padding: 0.45rem 1.2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #4c3c72;
+            border: 1px solid #e2d5ff;
+            transition: all 0.2s;
+            cursor: default;
+            backdrop-filter: blur(2px);
+        }
+
+        .skill-tag i {
+            margin-right: 6px;
+            font-size: 0.75rem;
+            color: #f59e0b;
+        }
+
+        .skill-tag:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            cursor: pointer;
+        }
+
+        /* 底部交互栏 */
+        .action-bar {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .action-btn {
+            background: rgba(139, 92, 246, 0.1);
+            border: none;
+            border-radius: 40px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #4c3a7a;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            backdrop-filter: blur(2px);
+        }
+
+        .action-btn i {
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: #8b5cf6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 14px -8px rgba(139, 92, 246, 0.4);
+        }
+
+        .online-sign {
+            font-size: 0.75rem;
+            color: #2b9a7a;
+            background: #ccfbf1;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+        }
+
+        /* 提示浮层 */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #1f2937e6;
+            backdrop-filter: blur(12px);
+            color: #fef9c3;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            white-space: nowrap;
+            font-family: monospace;
+            letter-spacing: 0.3px;
+        }
+
+        /* 响应式精修 */
+        @media (max-width: 640px) {
+            .card-core {
+                padding: 1.3rem;
+                margin: 0.8rem;
+            }
+            .hero-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .identity {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .title-badge h1 {
+                font-size: 1.9rem;
+            }
+            .contact-dock {
+                grid-template-columns: 1fr;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .action-btn {
+                justify-content: center;
+            }
+            .toast-message {
+                white-space: nowrap;
+                font-size: 0.75rem;
+                padding: 8px 20px;
+            }
+        }
+
+        /* 可访问性与焦点 */
+        .contact-tile:focus-visible, .action-btn:focus-visible {
+            outline: 2px solid #fbbf24;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-master">
+    <div class="card-core">
+        <!-- 头部区域 -->
+        <div class="hero-section">
+            <div class="identity">
+                <div class="avatar-ring">
+                    <div class="avatar-icon">
+                        <i class="fas fa-seedling"></i> <!-- 象征活力生长 -->
+                    </div>
+                </div>
+                <div class="title-badge">
+                    <h1>
+                        小盆友
+                        <i class="fas fa-face-grin-stars"></i>
+                    </h1>
+                    <div class="subhead">
+                        <i class="fas fa-magic"></i> 创意开发者 · 童心体验师
+                    </div>
+                </div>
+            </div>
+            <div class="dev-status">
+                <i class="fas fa-code-branch"></i> 可开发设计 · 动态组件
+            </div>
+        </div>
+
+        <!-- 个性描述 -->
+        <div class="bio-card">
+            <i class="fas fa-quote-right"></i> 保持好奇，像孩子一样观察世界，用代码和设计制造温暖。  
+            我相信好的产品源于纯真的视角 —— 很高兴与你相遇！
+        </div>
+
+        <!-- 联系方式网格 (优化开发扩展性：data属性丰富) -->
+        <div class="contact-dock">
+            <div class="contact-tile" data-copy="xiaopengyou@creative.world" data-label="📧 邮箱已复制">
+                <div class="tile-icon"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="tile-detail">
+                    <div class="label">电子邮箱</div>
+                    <div class="value">xiaopengyou@creative.world</div>
+                </div>
+            </div>
+            <div class="contact-tile" data-copy="+86 188 8888 2365" data-label="📞 手机号已复制">
+                <div class="tile-icon"><i class="fas fa-mobile-alt"></i></div>
+                <div class="tile-detail">
+                    <div class="label">联系电话</div>
+                    <div class="value">+86 188 8888 2365</div>
+                </div>
+            </div>
+            <div class="contact-tile" data-copy="https://kidult.design" data-label="🌐 官网已复制">
+                <div class="tile-icon"><i class="fas fa-compass"></i></div>
+                <div class="tile-detail">
+                    <div class="label">创意小站</div>
+                    <div class="value">kidult.design</div>
+                </div>
+            </div>
+            <div class="contact-tile" data-copy="kidult_xp" data-label="💬 微信号已复制">
+                <div class="tile-icon"><i class="fab fa-weixin"></i></div>
+                <div class="tile-detail">
+                    <div class="label">微信 ID</div>
+                    <div class="value">kidult_xp</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 兴趣与技能标签（便于后续动态生成） -->
+        <div class="skill-zone">
+            <div class="section-title">
+                <i class="fas fa-crown" style="color: #fbbf24;"></i> 宝藏技能 & 日常灵感
+            </div>
+            <div class="tag-group" id="skillGroup">
+                <!-- 预定义标签支持扩展 -->
+                <div class="skill-tag" data-skill="ui"><i class="fas fa-pen-fancy"></i> UI/UX 设计</div>
+                <div class="skill-tag" data-skill="frontend"><i class="fab fa-js"></i> 前端小剧场</div>
+                <div class="skill-tag" data-skill="illustration"><i class="fas fa-draw-polygon"></i> 数字插画</div>
+                <div class="skill-tag" data-skill="motion"><i class="fas fa-film"></i> 交互动效</div>
+                <div class="skill-tag" data-skill="idea"><i class="fas fa-lightbulb"></i> 脑暴发动机</div>
+                <div class="skill-tag" data-skill="story"><i class="fas fa-book"></i> 故事构建</div>
+            </div>
+        </div>
+
+        <!-- 交互操作栏：提升开发友好以及趣味功能 -->
+        <div class="action-bar">
+            <button class="action-btn" id="greetingMagicBtn"><i class="fas fa-hand-peace"></i> 打个招呼 ✨</button>
+            <button class="action-btn" id="copyAllDataBtn"><i class="fas fa-copy"></i> 复制完整名片</button>
+            <div class="online-sign"><i class="fas fa-circle" style="color: #10b981; font-size: 0.6rem;"></i> 可约聊 / 设计合作</div>
+        </div>
+    </div>
+</div>
+
+<div id="globalToast" class="toast-message">✨ 已复制 ✨</div>
+
+<script>
+    (function() {
+        // 增强版交互 + 开发可维护性配置
+
+        const toastEl = document.getElementById('globalToast');
+        let toastTimer = null;
+
+        function showToast(message, isSuccess = true) {
+            if (toastTimer) clearTimeout(toastTimer);
+            toastEl.textContent = message || (isSuccess ? '✓ 成功' : '⚠️ 再试一次');
+            toastEl.style.opacity = '1';
+            toastEl.style.transform = 'translateX(-50%) scale(1)';
+            toastTimer = setTimeout(() => {
+                toastEl.style.opacity = '0';
+                toastEl.style.transform = 'translateX(-50%) scale(0.9)';
+            }, 1800);
+        }
+
+        // 现代复制策略
+        async function copyTextToClipboard(text, successMsg) {
+            if (!text) return false;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast(successMsg || '📋 已复制到剪贴板');
+                return true;
+            } catch (err) {
+                // 后退方案
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast(successMsg || '📋 已复制');
+                return true;
+            }
+        }
+
+        // 给所有 contact-tile 加点击复制
+        const tiles = document.querySelectorAll('.contact-tile');
+        tiles.forEach(tile => {
+            tile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const copyVal = tile.getAttribute('data-copy');
+                const customMsg = tile.getAttribute('data-label') || '📌 已复制';
+                if (copyVal) {
+                    copyTextToClipboard(copyVal, customMsg);
+                } else {
+                    // 后备: 取 value 文本
+                    const valueSpan = tile.querySelector('.value');
+                    if (valueSpan) copyTextToClipboard(valueSpan.innerText, '✨ 已复制');
+                }
+            });
+        });
+
+        // 技能标签点击增加趣味反馈，并显示可开发扩展点
+        const skillTags = document.querySelectorAll('.skill-tag');
+        skillTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const skillName = tag.innerText.trim().replace(/[🔧🎨💡]/g, '');
+                showToast(`💡 小盆友也很擅长「${skillName}」！欢迎交流~`, true);
+                // 控制台输出设计扩展信息
+                console.log(`[开发日志] 点击技能: ${skillName} , 可扩展更多技能事件`);
+            });
+        });
+
+        // 打招呼按钮: 更有爱的随机消息池
+        const greetBtn = document.getElementById('greetingMagicBtn');
+        const greetMessages = [
+            "🥳 嗨！今天也要像孩子一样开心创造！", 
+            "🌟 很高兴认识你～ 一起保持好奇心吧", 
+            "🎈 小盆友向你发射灵感光波 ✨✨", 
+            "🍭 哇哦，谢谢你来看我的名片，交个朋友！",
+            "🧸 要一起喝杯虚拟奶茶吗？顺便聊聊设计~",
+            "🚀 探索有趣的事物，随时欢迎勾搭！"
+        ];
+        if (greetBtn) {
+            greetBtn.addEventListener('click', () => {
+                const randomMsg = greetMessages[Math.floor(Math.random() * greetMessages.length)];
+                showToast(randomMsg, true);
+                // 额外泡泡特效（轻量级）
+                const fakePop = document.createElement('div');
+                fakePop.innerText = '💬';
+                fakePop.style.position = 'fixed';
+                fakePop.style.bottom = '80px';
+                fakePop.style.right = '20px';
+                fakePop.style.fontSize = '2rem';
+                fakePop.style.opacity = '0.8';
+                fakePop.style.pointerEvents = 'none';
+                fakePop.style.transition = 'transform 0.5s ease, opacity 0.5s';
+                fakePop.style.zIndex = '999';
+                document.body.appendChild(fakePop);
+                setTimeout(() => {
+                    fakePop.style.transform = 'translateY(-40px)';
+                    fakePop.style.opacity = '0';
+                    setTimeout(() => fakePop.remove(), 500);
+                }, 50);
+            });
+        }
+
+        // 一键复制完整名片信息 (开发设计可扩展，数据统一)
+        const copyAllBtn = document.getElementById('copyAllDataBtn');
+        if (copyAllBtn) {
+            copyAllBtn.addEventListener('click', async () => {
+                // 从页面中抽取结构化数据
+                const name = "小盆友";
+                const title = "创意开发者 · 童心体验师";
+                const email = "xiaopengyou@creative.world";
+                const phone = "+86 188 8888 2365";
+                const website = "kidult.design";
+                const wechat = "kidult_xp";
+                const bio = "保持好奇，像孩子一样观察世界，用代码和设计制造温暖。";
+                // 收集技能标签文本
+                const skills = Array.from(skillTags).map(t => t.innerText.replace(/[🔧🎨💡]/g, '').trim()).join(', ');
+                const fullCard = `
+🎨 小盆友 · 数字名片 🎨
+━━━━━━━━━━━━━━━━━━━━
+✨ 姓名：${name}
+✨ 角色：${title}
+📧 邮箱：${email}
+📞 电话：${phone}
+🌐 网站：${website}
+💬 微信：${wechat}
+💡 简介：${bio}
+🎯 技能/热爱：${skills}
+
+🚀 可开发设计 · 创意无限
+很高兴与你建立联系！
+                `;
+                await copyTextToClipboard(fullCard, "✅ 完整名片已复制，欢迎分享交流！");
+            });
+        }
+
+        // 额外装饰: 若点击头像也可复制个性签名 (提升趣味)
+        const avatarRing = document.querySelector('.avatar-ring');
+        if (avatarRing) {
+            avatarRing.addEventListener('click', () => {
+                copyTextToClipboard("🌟 小盆友 · 保持热爱的每一天 🌟", "🧸 个性签名已复制");
+            });
+        }
+
+        // 控制台输出可开发提示
+        console.log("%c✨ 小盆友名片已加载 | 设计系统可扩展 (技能/联系人轻松增删) ✨", "color: #8b5cf6; font-size: 14px; font-weight: bold;");
+        console.log("%c💡 提示：所有 contact-tile 添加 data-copy 即可增加复制项，技能列表支持自定义事件", "color: #f59e0b");
+    })();
+</script>
+</body>
 </html>
